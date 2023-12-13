@@ -1,12 +1,23 @@
 package cz.secda1.spsmb.javaDates;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.*;
+import java.time.chrono.ChronoLocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
+
 public class DateTimeUtils {
+
+    static DateTimeFormatter czDateFormat = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    static DateFormat timeFormat = new SimpleDateFormat("dd.MM.yyyy HH");
 
     /**
      * Vypište aktuální datum ve formátu den.měsíc.rok hodina:minuta (např. 12.12.2023 14:41)
@@ -15,7 +26,7 @@ public class DateTimeUtils {
      * @return String s naformátovaným datem
      */
     public static String formattedDate(LocalDateTime date) {
-        return null;
+         return czDateFormat.format(date);
     }
 
     /**
@@ -25,7 +36,8 @@ public class DateTimeUtils {
      * @return
      */
     public static LocalDate parseDate(String dateString) {
-        return null;
+        LocalDate parsedTime =LocalDate.parse(dateString, DateTimeFormatter.ofPattern("dd.MM.yyyy"));
+        return parsedTime;
     }
 
     /**
@@ -35,7 +47,9 @@ public class DateTimeUtils {
      * @return vložené datum s časem 12:00
      */
     public static String atMoonTime(LocalDate date) {
-        return null;
+        LocalDateTime date1 = date.atTime(0,0);
+        date1 = date1.plus(12,ChronoUnit.HOURS);
+        return date1.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
     }
 
     /**
@@ -46,12 +60,12 @@ public class DateTimeUtils {
      */
     public static String whatsTheDateToday(LocalDate today) {
         //dopolňte do proměnné dayOfWeek den v týdnu.
-        DayOfWeek dayOfWeek = null;
+        DayOfWeek dayOfWeek = today.getDayOfWeek();
 
         String dayNameInCzech = dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault());
 
         //Sestavte message "Dnes je <dayNameInCzech>." pomocí String.format()
-        String formattedMessage = null;
+        String formattedMessage = String.format("Dnes je %s", dayNameInCzech + ".");
         return formattedMessage;
     }
 
@@ -65,7 +79,9 @@ public class DateTimeUtils {
      * @return String message
      */
     public static String daysToChristmas() {
-        return null;
+        LocalDate chrismas = LocalDate.of(2023, Month.DECEMBER,24);
+        Long days = ChronoUnit.DAYS.between(LocalDate.now(),chrismas);
+        return String.format("Do Vánoc zbývá %s dní.",days);
     }
 
     /**
@@ -74,14 +90,18 @@ public class DateTimeUtils {
      *
      * @examples
      * např. pro start = 01.01.2023 a end = 31.12.2023 vrátí list ve stejném pořadí
-     * např. pro start = 31.12.2023  a end = 01.01.2023 vrátí list ve opět s nižším datem na první pozici a s vyšším na pozici druhé, tedy opět 01.01.2023, 31.12.2023.
+     * např. pro start = 31.12.2023  a end = 01.01.2023 vrátí list ve opět s nižším datem na první pozici a s vyšším na pozici druhé,
+     * tedy opět 01.01.2023, 31.12.2023.
      *
      * @param start první datum pro porovnání
      * @param end druhé datum pro porovnání
      * @return List<LocalDate> s oběma seřazenými datumy
      */
     public static List<LocalDate> smallerFirst(LocalDate start, LocalDate end){
-        return null;
+        List<LocalDate> dateList = new ArrayList<>();
+        dateList.add(start);
+        dateList.add(end);
+        return dateList.stream().sorted().collect(Collectors.toList());
     }
 
     /**
@@ -90,7 +110,14 @@ public class DateTimeUtils {
      * @return první pondělí po Vánocích (LocalDate)
      */
     public static LocalDate firstMondayAfterChristmas(){
-        return null;
+        LocalDate chrismasafter = LocalDate.of(2023, 12,24);
+        DayOfWeek vanoce = chrismasafter.getDayOfWeek();
+
+        while (!vanoce.equals(DayOfWeek.MONDAY)){
+            chrismasafter = chrismasafter.plus(1,ChronoUnit.DAYS);
+            vanoce = chrismasafter.getDayOfWeek();
+        }
+        return chrismasafter;
     }
 
 }
